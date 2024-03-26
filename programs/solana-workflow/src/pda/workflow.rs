@@ -29,6 +29,9 @@ pub struct VoteOption {
     pub next_id: u16,
 }
 
+/// CheckPoint data
+/// vote_machine: None if the CheckPoint is the leaf or Pubkey if the CheckPoint is an internal node
+/// options: None if the CheckPoint is the leaf or Some if the CheckPoint is an internal node
 #[account]
 #[derive(InitSpace)]
 pub struct CheckPoint {
@@ -38,6 +41,7 @@ pub struct CheckPoint {
     pub title: String,
     #[max_len(10)]
     pub options: Option<Vec<VoteOption>>,
+    pub vote_machine: Option<Pubkey>,
 }
 
 impl CheckPoint {
@@ -60,11 +64,13 @@ impl CheckPoint {
         id: u16,
         title: String,
         options: Option<Vec<VoteOption>>,
+        vote_machine: Option<Pubkey>,
     ) -> Result<()> {
         self.workflow_id = workflow_id;
         self.id = id;
         self.title = title;
         self.options = options;
+        self.vote_machine = vote_machine;
         Ok(())
     }
 
@@ -78,6 +84,7 @@ impl CheckPoint {
         id: u16,
         title: String,
         options: Option<Vec<VoteOption>>,
+        vote_machine: Option<Pubkey>,
     ) -> Result<()> {
         let binding = workflow.key();
         let seeds: &[&[u8]] = &[&id.to_le_bytes(), b"checkpoint", binding.as_ref()];
@@ -96,7 +103,7 @@ impl CheckPoint {
 
         // deserialize and modify checkpoint account
         let mut run = CheckPoint::from(&checkpoint);
-        run.create(workflow_id, id, title, options)?;
+        run.create(workflow_id, id, title, options, vote_machine)?;
 
         // write
         run.serialize(checkpoint.to_account_info())?;

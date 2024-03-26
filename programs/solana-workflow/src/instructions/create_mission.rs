@@ -34,8 +34,8 @@ pub fn create_mission(
     title: String,
     content: String,
     current_vote_data: Pubkey,
-    checkpoint_id: u16,
-    vote_data_id: u64,
+    checkpoint_id: u16, // TODO: why? checkpoint_id is the start id of the workflow checkpoint list
+    vote_data_id: u64, // TODO: why? vote_data_id is the start id of the vote_data list
 ) -> Result<()> {
     let mission = &mut ctx.accounts.mission;
     Mission::create(
