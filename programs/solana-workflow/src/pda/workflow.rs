@@ -37,11 +37,11 @@ pub struct VoteOption {
 pub struct CheckPoint {
     pub workflow_id: u64,
     pub id: u16,
+    pub vote_machine: Option<Pubkey>,
     #[max_len(50)]
     pub title: String,
     #[max_len(10)]
     pub options: Option<Vec<VoteOption>>,
-    pub vote_machine: Option<Pubkey>,
 }
 
 impl CheckPoint {
